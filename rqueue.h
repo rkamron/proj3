@@ -44,7 +44,7 @@ class Student{
     Student(string name, int level, int major, int group, int race, 
             int gender, int income, int high){
                 m_name = name; m_level = level; m_major = major; m_group = group;
-                m_gender = gender; m_income = income; m_highschool = high;
+                m_race = race; m_gender = gender; m_income = income; m_highschool = high;
             }
     // Overloaded assignment operator
     const Student& operator=(const Student& rhs){
@@ -183,5 +183,7 @@ class RQueue {
      ******************************************/
 
     Node* merge(Node* p1, Node*p2);
+    int count(Node *curr) const;
+    void deleteSubtree(Node *subtree);
 };
 #endif

@@ -142,7 +142,7 @@ int main(){
     Random majorGen(0,4);Random groupGen(0,3);
     Random raceGen(0,2);Random genderGen(0,2);
     Random incomeGen(0,4);Random highschoolGen(0,2);
-    RQueue aQueue(priorityFn2, MINHEAP, SKEW);
+    RQueue aQueue(priorityFn2, MINHEAP, LEFTIST);
     for (int i=0;i<8;i++){
         Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                     majorGen.getRandNum(), groupGen.getRandNum(),
