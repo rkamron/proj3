@@ -25,7 +25,7 @@ void RQueue::deleteSubtree(Node *subtree) {
 }
 
 RQueue::RQueue(const RQueue& rhs) {
-    
+
 }
 
 // getHeapType()
@@ -62,14 +62,13 @@ Node* RQueue::merge(Node* p1, Node* p2) {
     // merging the two heaps
     Node* tempHeap = p1->m_right; 
     p1->m_right = p1->m_left; // swap children of p1
-    p1->m_left = merge(p2, tempHeap); // merging p2 with the left child of p1
+    p1->m_left = merge(p2, tempHeap); // merging p2 with the old right child of p1
     
-    // updating npl
+    // Updating NPL
     if (p1->m_left == nullptr) {
         // left child empty so move the right to the left
         p1->m_left = p1->m_right;
         p1->m_right = nullptr;
-        p1->setNPL(p1->m_left->m_npl + 1);
     } 
     else if (p1->m_left != nullptr && p1->m_right != nullptr) {
         if (p1->m_left->m_npl < p1->m_right->m_npl) {
@@ -78,7 +77,14 @@ Node* RQueue::merge(Node* p1, Node* p2) {
             p1->m_left = p1->m_right;
             p1->m_right = temp;
         }
+        
+        //cout << "Current node before updating its NPL: \n" << *p1 << "\n";
+        int minNPL = (p1->m_right->m_npl <= p1->m_left->m_npl) ? p1->m_right->m_npl : p1->m_left->m_npl;
+        
+        if (p1->m_npl == minNPL + 1) return p1;
+
         p1->setNPL(p1->m_right->m_npl + 1);
+
     }
 
     return p1;
@@ -90,6 +96,7 @@ void RQueue::insertStudent(const Student& student) {
     Node *newNode = new Node(student); // makes a new node 
     m_heap = merge(m_heap, newNode);
     m_size++;
+    dump();
 }
 
 // numStudents()

@@ -135,34 +135,51 @@ string nameDB[NUMNAMES] = {
     "Erika Drake", "Libby Russo", "Liam Taylor", "Sofia Stewart"
 };
 
-
-
 class Tester{
     // implement your test functions in this class
     public:
+
+    // testLeftistHeap(RQueue &tree)
+    // 
     bool testLeftistHeap(RQueue &tree) {
         bool result = checkNPL(tree.m_heap);
         return result;
     }
 
+    // checkNPL(Node* curr)
+    // iterates through the curr subtree and checks to make sure that the NPL is correct
     bool checkNPL(Node *curr) {
         // if node exists
         if (curr != nullptr) {
             
-            // checking npl when either child of curr is nullptr
+            // no children
             if (curr->m_left == nullptr && curr->m_right == nullptr) {
                 if (curr->getNPL() != 0) return false; // checking curr NPL
                 else return true;
             }
+            // one child
             else if (curr->m_left == nullptr || curr->m_right == nullptr) {
                 if (curr->getNPL() != 0) return false; // checking curr NPL
 
                 Node *next = (curr->m_left != nullptr) ? curr->m_left : curr->m_right;
                 return checkNPL(next);
             }
+            // two children
             else if (curr->m_left && curr->m_right) {
+                
+                // if the right child has a higher NPL than the left child
                 if (curr->m_left->getNPL() < curr->m_right->getNPL()) return false;
 
+                // if curr node is +1 the min NPL of its nodes
+                Node* childNPL = (curr->m_right->m_npl < curr->m_left->m_npl) ? curr->m_right : curr->m_left;
+                //int childNPL = curr->m_right->m_npl;
+                //cout << *curr << "\n";
+                //cout << *(curr->m_right) << "\n";
+                cout << "Parent npl: " << *curr << "\n Child npl: " << childNPL << "\n";
+
+                if (curr->m_npl != childNPL->m_npl + 1) return false;
+
+                // recusively check both childrens NPL
                 bool result = (checkNPL(curr->m_left) && checkNPL(curr->m_right)) ? true : false;
                 return result;
             }
@@ -177,6 +194,8 @@ class Tester{
         return result;
     }
 
+    // checkPriority(Node*, HEAPTYPE, prifn_t)
+    // iterates through the curr subtree and checks if the parent has a higher priority
     bool checkPriority(Node *curr, HEAPTYPE type, prifn_t priFn) {
         if (curr == nullptr) return true;
 
@@ -195,9 +214,8 @@ class Tester{
         // if there is a right child then check the priority between curr and curr->m_right
         if (curr->m_right) {
 
-            // conditionals to check priority based on the heap type
+            // if in a MINHEAP, the parent node priority is lower than its right node
             if (type == MINHEAP && (priFn(curr->getStudent()) > priFn(curr->m_right->getStudent()))) {
-                // if in a MINHEAP, the parent node priority is lower than its right node
                 return false;
             }
             else if (type == MAXHEAP && (priFn(curr->getStudent()) < priFn(curr->m_right->getStudent()))) {
@@ -220,47 +238,47 @@ int main(){
     
     {
         cout << "Testing leftist heap insertions\n";
-        RQueue aQueue(priorityFn2, MINHEAP, LEFTIST);
+        RQueue leftistQueue(priorityFn2, MINHEAP, LEFTIST);
 
-        for (int i=0;i<8;i++){
+        for (int i = 0; i < 8; i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
                         incomeGen.getRandNum(), highschoolGen.getRandNum());
-            aQueue.insertStudent(student);
+            leftistQueue.insertStudent(student);
         }
 
         cout << "Checking NPL values of every node.\n";
-        string result = (test.testLeftistHeap(aQueue)) ? "true" : "false";
+        string result = (test.testLeftistHeap(leftistQueue)) ? "true" : "false";
         cout << "Checking NPL values of every node\t" << result << "\n";
 
         cout << "\nDump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
-        aQueue.dump();
+        leftistQueue.dump();
     }
 
     {
         cout << "Testing skew minheap insertions\n";
-        RQueue aQueue(priorityFn1, MINHEAP, SKEW);
+        RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
         for (int i=0;i<8;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
                         incomeGen.getRandNum(), highschoolGen.getRandNum());
-            aQueue.insertStudent(student);
+            skewQueue.insertStudent(student);
         }
 
         cout << "Checking priority of every subtree.\n";
-        string result = (test.testSkewHeapInserts(aQueue)) ? "true" : "false";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
         cout << "Checking priority of every subtree\t" << result << "\n";
 
         cout << "\nDump of the skew heap queue with priorityFn2 (MINHEAP):\n";
-        aQueue.dump();
+        skewQueue.dump();
     }
 
     {
         cout << "Testing skew manheap insertions\n";
-        RQueue aQueue(priorityFn2, MAXHEAP, SKEW);
+        RQueue aQueue(priorityFn1, MAXHEAP, SKEW);
 
         for (int i=0;i<8;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
