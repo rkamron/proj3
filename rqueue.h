@@ -169,6 +169,7 @@ class RQueue {
     // Set a new data structure (skew/leftist). Must rebuild the heap!!!
     void setStructure(STRUCTURE structure);
     void dump() const; // For debugging purposes
+    
     private:
     Node * m_heap;          // Pointer to root of skew heap
     int m_size;             // Current size of the heap
@@ -182,8 +183,11 @@ class RQueue {
      * Private function declarations go here! *
      ******************************************/
 
-    Node* merge(Node* p1, Node*p2);
+    Node* skewMerge(Node* p1, Node*p2);
+    Node* leftistMerge(Node* p1, Node*p2);
+    int calculateNPL(Node* curr);
     int count(Node *curr) const;
     void deleteSubtree(Node *subtree);
+    Node* reInsert(Node *root, Node *curr);
 };
 #endif

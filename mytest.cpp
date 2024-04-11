@@ -175,7 +175,7 @@ class Tester{
                 //int childNPL = curr->m_right->m_npl;
                 //cout << *curr << "\n";
                 //cout << *(curr->m_right) << "\n";
-                cout << "Parent npl: " << *curr << "\n Child npl: " << childNPL << "\n";
+                //cout << "Parent npl: " << *curr << "\n Child npl: " << childNPL << "\n";
 
                 if (curr->m_npl != childNPL->m_npl + 1) return false;
 
@@ -240,7 +240,7 @@ int main(){
         cout << "Testing leftist heap insertions\n";
         RQueue leftistQueue(priorityFn2, MINHEAP, LEFTIST);
 
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 20; i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
@@ -252,8 +252,9 @@ int main(){
         string result = (test.testLeftistHeap(leftistQueue)) ? "true" : "false";
         cout << "Checking NPL values of every node\t" << result << "\n";
 
-        cout << "\nDump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
+        cout << "Dump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
         leftistQueue.dump();
+        cout << "\n";
     }
 
     {
@@ -272,15 +273,16 @@ int main(){
         string result = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
         cout << "Checking priority of every subtree\t" << result << "\n";
 
-        cout << "\nDump of the skew heap queue with priorityFn2 (MINHEAP):\n";
+        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
         skewQueue.dump();
+        cout << "\n";
     }
 
     {
         cout << "Testing skew manheap insertions\n";
         RQueue aQueue(priorityFn1, MAXHEAP, SKEW);
 
-        for (int i=0;i<8;i++){
+        for (int i=0;i<10;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
@@ -292,21 +294,36 @@ int main(){
         string result = (test.testSkewHeapInserts(aQueue)) ? "true" : "false";
         cout << "Checking priority of every subtree\t" << result << "\n";
 
-        cout << "\nDump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
+        cout << "Dump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
         aQueue.dump();
+        cout << "\n";
+    }
+    
+    {
+        cout << "Testing conversion from min to max heap\n";
+        RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
+
+        for (int i=0;i<3;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            skewQueue.insertStudent(student);
+        }
+
+        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
+        skewQueue.dump();
+
+        cout << "\nBeginning conversion:\n";
+        skewQueue.setPriorityFn(priorityFn1, MAXHEAP);
+
+        cout << "\nDump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
+        skewQueue.dump();
+        cout << "\n";
     }
 
     return 0;
 }
-
-
-
-
-
-
-
-
-
 
 
 int priorityFn1(const Student & student) {
