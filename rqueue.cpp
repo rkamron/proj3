@@ -1,5 +1,8 @@
 // UMBC - CMSC 341 - Spring 2024 - Proj3
 #include "rqueue.h"
+
+// RQueue(prifn_t priFn, HEAPTYPE heapType, STRUCTURE structure)
+// Constructor
 RQueue::RQueue(prifn_t priFn, HEAPTYPE heapType, STRUCTURE structure) {
     m_heap = nullptr;
     m_size = 0;
@@ -8,6 +11,9 @@ RQueue::RQueue(prifn_t priFn, HEAPTYPE heapType, STRUCTURE structure) {
     m_heapType = heapType;
     m_structure = structure;
 }
+
+// ~RQueue
+// Destructor 
 RQueue::~RQueue() {
     clear();
 }
@@ -217,8 +223,15 @@ Node* RQueue::reInsert(Node *root, Node *curr) {
     return root;
 }
 
+// setStructure(STRUCTURE structure)
+// Changes the structure of the heap, from skew
 void RQueue::setStructure(STRUCTURE structure){
     m_structure = structure;
+
+    Node *old_root = m_heap;
+    m_heap = nullptr;
+
+    m_heap = reInsert(m_heap, old_root);
 }
 
 // 

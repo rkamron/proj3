@@ -314,12 +314,47 @@ int main(){
         cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
         skewQueue.dump();
 
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
+        cout << "Checking priority of tree before conversion\t" << result << "\n";
+
         cout << "\nBeginning conversion:\n";
         skewQueue.setPriorityFn(priorityFn1, MAXHEAP);
 
         cout << "\nDump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
         skewQueue.dump();
         cout << "\n";
+
+        string result2 = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
+        cout << "Checking priority of tree after conversion\t" << result2 << "\n";
+    }
+
+    {
+        cout << "Testing conversion from skew to leftist heap\n";
+        RQueue changeQueue(priorityFn2, MINHEAP, LEFTIST);
+
+        for (int i=0;i<3;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            changeQueue.insertStudent(student);
+        }
+
+        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
+        changeQueue.dump();
+
+        string result = (test.testSkewHeapInserts(changeQueue)) ? "true" : "false";
+        cout << "Checking priority of tree before conversion\t" << result << "\n";
+
+        cout << "\nBeginning conversion:\n";
+        changeQueue.setStructure(LEFTIST);
+
+        cout << "Dump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
+        changeQueue.dump();
+        cout << "\n";
+        
+        //string result2 = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
+        //cout << "Checking priority of tree after conversion\t" << result2 << "\n";
     }
 
     return 0;
