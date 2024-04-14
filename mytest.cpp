@@ -2,6 +2,7 @@
 #include "rqueue.cpp"
 #include <math.h>
 #include <algorithm>
+#include <iostream>
 #include <random>
 #include <vector>
 #include <ctime>     //used to get the current time
@@ -236,8 +237,9 @@ int main(){
     Random incomeGen(0,4);Random highschoolGen(0,2);
     Tester test;
     
+    cout << "\n=======INSERT TESTS=======\n";
+
     {
-        cout << "Testing leftist heap insertions\n";
         RQueue leftistQueue(priorityFn2, MINHEAP, LEFTIST);
 
         for (int i = 0; i < 20; i++){
@@ -248,17 +250,14 @@ int main(){
             leftistQueue.insertStudent(student);
         }
 
-        cout << "Checking NPL values of every node.\n";
-        string result = (test.testLeftistHeap(leftistQueue)) ? "true" : "false";
-        cout << "Checking NPL values of every node\t" << result << "\n";
+        string result = (test.testLeftistHeap(leftistQueue)) ? "TRUE" : "FALSE";
+        cout << "Leftist Min Heap insertions:\t" << result << "\n";
 
-        cout << "Dump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
         leftistQueue.dump();
         cout << "\n";
     }
 
     {
-        cout << "Testing skew minheap insertions\n";
         RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
         for (int i=0;i<8;i++){
@@ -269,17 +268,14 @@ int main(){
             skewQueue.insertStudent(student);
         }
 
-        cout << "Checking priority of every subtree.\n";
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
-        cout << "Checking priority of every subtree\t" << result << "\n";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        cout << "Skew Min Heap insertions:\t" << result << "\n";
 
-        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
         skewQueue.dump();
         cout << "\n";
     }
 
     {
-        cout << "Testing skew manheap insertions\n";
         RQueue aQueue(priorityFn1, MAXHEAP, SKEW);
 
         for (int i=0;i<10;i++){
@@ -290,17 +286,16 @@ int main(){
             aQueue.insertStudent(student);
         }
 
-        cout << "Checking priority of every subtree.\n";
-        string result = (test.testSkewHeapInserts(aQueue)) ? "true" : "false";
-        cout << "Checking priority of every subtree\t" << result << "\n";
+        string result = (test.testSkewHeapInserts(aQueue)) ? "TRUE" : "FALSE";
+        cout << "Skew Max Heap insertions:\t" << result << "\n";
 
-        cout << "Dump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
         aQueue.dump();
         cout << "\n";
     }
     
+    cout << "=======CONVERSION TESTS=======\n";
+
     {
-        cout << "Testing conversion from min to max heap\n";
         RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
         for (int i=0;i<3;i++){
@@ -311,28 +306,27 @@ int main(){
             skewQueue.insertStudent(student);
         }
 
-        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
+        cout << "Skew Min Heap dump:\n";
         skewQueue.dump();
 
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
         cout << "Checking priority of tree before conversion\t" << result << "\n";
 
-        cout << "\nBeginning conversion:\n";
         skewQueue.setPriorityFn(priorityFn1, MAXHEAP);
 
-        cout << "\nDump of the skew heap queue with priorityFn1 (MAXHEAP):\n";
+        cout << "\nSkew Max Heap dump:\n";
         skewQueue.dump();
         cout << "\n";
 
-        string result2 = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
+        string result2 = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
         cout << "Checking priority of tree after conversion\t" << result2 << "\n";
     }
 
     {
-        cout << "Testing conversion from skew to leftist heap\n";
+        cout << "\nTesting conversion from skew to leftist heap\n";
         RQueue changeQueue(priorityFn2, MINHEAP, LEFTIST);
 
-        for (int i=0;i<3;i++){
+        for (int i=0;i<5;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),

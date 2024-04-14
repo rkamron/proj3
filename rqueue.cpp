@@ -144,7 +144,6 @@ void RQueue::insertStudent(const Student& student) {
     }
 
     m_size++;
-    dump();
 }
 
 // numStudents()
@@ -202,14 +201,15 @@ void RQueue::setPriorityFn(prifn_t priFn, HEAPTYPE heapType) {
 Node* RQueue::reInsert(Node *root, Node *curr) {
     Node *right = curr->m_left;
     Node *left = curr->m_right;
+    
+    curr->m_left = nullptr;
+    curr->m_right = nullptr;
 
     if (left) {
         root = reInsert(root, left);
-        curr->m_left = nullptr;
     }
     if (right) {
         root = reInsert(root, right);
-        curr->m_right = nullptr;
     }
 
     if (m_structure == LEFTIST) {
@@ -234,7 +234,8 @@ void RQueue::setStructure(STRUCTURE structure){
     m_heap = reInsert(m_heap, old_root);
 }
 
-// 
+// getStructure() const
+// m_structure getteer
 STRUCTURE RQueue::getStructure() const {
     return m_structure;
 }
