@@ -141,7 +141,7 @@ class Tester{
     public:
 
     // testLeftistHeap(RQueue &tree)
-    // 
+    // Uses heap root to call checkNPL()
     bool testLeftistHeap(RQueue &tree) {
         bool result = checkNPL(tree.m_heap);
         return result;
@@ -173,10 +173,6 @@ class Tester{
 
                 // if curr node is +1 the min NPL of its nodes
                 Node* childNPL = (curr->m_right->m_npl < curr->m_left->m_npl) ? curr->m_right : curr->m_left;
-                //int childNPL = curr->m_right->m_npl;
-                //cout << *curr << "\n";
-                //cout << *(curr->m_right) << "\n";
-                //cout << "Parent npl: " << *curr << "\n Child npl: " << childNPL << "\n";
 
                 if (curr->m_npl != childNPL->m_npl + 1) return false;
 
@@ -254,6 +250,11 @@ class Tester{
 
         return result;
     }
+
+    // testEmpty(RQueue &tree)
+    bool testEmpty(RQueue &tree) {
+        return (tree.m_heap == nullptr) ? true : false;
+    }
     
 };
 
@@ -269,7 +270,8 @@ int main(){
     {
         RQueue leftistQueue(priorityFn2, MINHEAP, LEFTIST);
 
-        for (int i = 0; i < 10; i++){
+        // creates and inserts random students
+        for (int i = 0; i < 300; i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
@@ -277,16 +279,16 @@ int main(){
             leftistQueue.insertStudent(student);
         }
 
-        string result = (test.testLeftistHeap(leftistQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testLeftistHeap(leftistQueue)) ? "PASSED" : "FAILED";
         cout << "Leftist Min Heap insertions:\t" << result << "\n";
 
-        //leftistQueue.dump();
     }
 
     {
         RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
-        for (int i=0;i<8;i++){
+        // creates and inserts random students
+        for (int i = 0; i < 300; i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
@@ -294,15 +296,15 @@ int main(){
             skewQueue.insertStudent(student);
         }
 
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "PASSED" : "FAILED";
         cout << "Skew Min Heap insertions:\t" << result << "\n";
 
-        //skewQueue.dump();
     }
 
     {
         RQueue aQueue(priorityFn1, MAXHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<10;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -311,16 +313,16 @@ int main(){
             aQueue.insertStudent(student);
         }
 
-        string result = (test.testSkewHeapInserts(aQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testSkewHeapInserts(aQueue)) ? "PASSED" : "FAILED";
         cout << "Skew Max Heap insertions:\t" << result << "\n";
 
-        //aQueue.dump();
     }
     
-    cout << "=======CONVERSION TESTS=======\n";
+    cout << "\n=======CONVERSION TESTS=======\n";
     {
         RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<3;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -331,13 +333,14 @@ int main(){
 
         skewQueue.setPriorityFn(priorityFn1, MAXHEAP);
 
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "PASSED" : "FAILED";
         cout << "Skew Min Heap to Skew Max Heap conversion:\t" << result << "\n";
     }
 
     {
         RQueue skewQueue(priorityFn1, MAXHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<3;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -348,13 +351,14 @@ int main(){
 
         skewQueue.setPriorityFn(priorityFn2, MINHEAP);
 
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "PASSED" : "FAILED";
         cout << "Skew Max Heap to Skew Min Heap conversion:\t" << result << "\n";
     }
 
     {
         RQueue changeQueue(priorityFn2, MINHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<5;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -365,13 +369,14 @@ int main(){
 
         changeQueue.setStructure(LEFTIST);
         
-        string result = (test.testLeftistHeap(changeQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testLeftistHeap(changeQueue)) ? "PASSED" : "FAILED";
         cout << "Skew Min Heap to Leftist Min Heap conversion:\t" << result << "\n";
     }
 
     {
         RQueue changeQueue(priorityFn2, MINHEAP, LEFTIST);
 
+        // creates and inserts random students
         for (int i=0;i<5;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -382,14 +387,15 @@ int main(){
 
         changeQueue.setStructure(SKEW);
         
-        string result = (test.testSkewHeapInserts(changeQueue)) ? "TRUE" : "FALSE";
+        string result = (test.testSkewHeapInserts(changeQueue)) ? "PASSED" : "FAILED";
         cout << "Leftist Min Heap to Skew Min Heap conversion:\t" << result << "\n";
     }
 
-    cout << "=======COPY CONSTRUCTOR AND OVERLOADED ASSIGNMENT=======\n";
+    cout << "\n=======COPY CONSTRUCTOR AND OVERLOADED ASSIGNMENT=======\n";
     {
         RQueue queue1(priorityFn2, MINHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<5;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -400,14 +406,24 @@ int main(){
 
         RQueue queue2(queue1);
         
-        string result = (test.testDeepCopy(queue1, queue2)) ? "TRUE" : "FALSE";
+        string result = (test.testDeepCopy(queue1, queue2)) ? "PASSED" : "FAILED";
         cout << "Copy Constructor test:\t" << result << "\n";
+    }
+
+    {
+        RQueue emptyQueue(priorityFn2, MINHEAP, SKEW); //empty Queue
+
+        RQueue queue(emptyQueue);
+        
+        string result = (test.testEmpty(queue)) ? "PASSED" : "FAILED";
+        cout << "Copy Constructor edge case:\t" << result << "\n";
     }
     
     {
         RQueue queue1(priorityFn2, MINHEAP, SKEW);
         RQueue queue2(priorityFn2, MINHEAP, SKEW);
 
+        // creates and inserts random students
         for (int i=0;i<5;i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
@@ -426,11 +442,92 @@ int main(){
 
         queue1 = queue2;
         
-        string result = (test.testDeepCopy(queue1, queue2)) ? "TRUE" : "FALSE";
+        string result = (test.testDeepCopy(queue1, queue2)) ? "PASSED" : "FAILED";
         cout << "Overloaded assignment operator test:\t" << result << "\n";
     }
 
+    {
+        RQueue queue(priorityFn2, MINHEAP, SKEW);
+        RQueue emptyQueue(priorityFn2, MINHEAP, SKEW);
 
+        // creates and inserts random students
+        for (int i=0;i<5;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue.insertStudent(student);
+        }
+
+        queue = emptyQueue;
+        
+        string result = (test.testEmpty(queue)) ? "PASSED" : "FAILED";
+        cout << "Overloaded assignment operator edge case:\t" << result << "\n";
+    }
+
+    cout << "\n=======MERGE TESTS=======\n";
+    {
+        RQueue queue1(priorityFn2, MINHEAP, SKEW);
+        RQueue queue2(priorityFn2, MINHEAP, SKEW);
+
+        // creates and inserts random students
+        for (int i = 0; i < 5; i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue1.insertStudent(student);
+        }
+
+        queue1.mergeWithQueue(queue2);
+        
+        string result = (test.testSkewHeapInserts(queue1)) ? "PASSED" : "FAILED";
+        cout << "Merge edge case (one heap empty):\t" << result << "\n";
+    }
+
+    {
+        RQueue queue1(priorityFn2, MINHEAP, SKEW);
+        RQueue queue2(priorityFn1, MAXHEAP, SKEW);
+
+        // creates and inserts random students
+        for (int i = 0; i < 5; i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue1.insertStudent(student);
+        }
+
+        string result;
+
+        try {
+            queue1.mergeWithQueue(queue2);
+            result = "FALED";
+        }
+        catch (domain_error &e) {
+            result = "PASSED";
+        }
+
+        cout << "Merge error case (different priority functions):\t" << result << "\n";
+    }
+
+    cout << "\n=======REMOVAL TESTS=======\n";
+    {
+        RQueue emptyQueue(priorityFn2, MINHEAP, LEFTIST);
+
+        string result;
+
+        try {
+            emptyQueue.getNextStudent();
+            result = "FAILED"; // if getNextStudent() didnt throw a error case, then failed
+        }
+        catch (out_of_range &e) {
+            result = "PASSED";
+        }
+
+        cout << "Removal error case (heap empty):\t" << result << "\n";
+
+    }
 
     return 0;
 }

@@ -83,7 +83,7 @@ void RQueue::mergeWithQueue(RQueue& rhs) {
     // protection against self-merging
     if (&rhs == this) return;
 
-    if (rhs.getPriorityFn() != m_priorFunc && rhs.getHeapType() != m_heapType && rhs.getStructure() != m_structure) {
+    if (rhs.getPriorityFn() != m_priorFunc || rhs.getHeapType() != m_heapType || rhs.getStructure() != m_structure) {
         throw domain_error("Cannot merge heaps with different structures or priority functions.\n");
     }
 
