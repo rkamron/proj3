@@ -189,5 +189,7 @@ class RQueue {
     int count(Node *curr) const;
     void deleteSubtree(Node *subtree);
     Node* reInsert(Node *root, Node *curr);
+    Node* deepCopy(Node *temp);
+    void preOrderPrint(Node *curr) const;
 };
 #endif

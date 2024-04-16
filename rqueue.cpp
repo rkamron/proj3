@@ -17,10 +17,14 @@ RQueue::RQueue(prifn_t priFn, HEAPTYPE heapType, STRUCTURE structure) {
 RQueue::~RQueue() {
     clear();
 }
+
+// clear()
 void RQueue::clear() {
     deleteSubtree(m_heap);
 }
 
+// deleteSubtree(Node *subtree) helper function
+// Recursively iterates through the tree and deletes every node is a post-order format
 void RQueue::deleteSubtree(Node *subtree) {
     if (subtree == nullptr) return;
 
@@ -30,8 +34,26 @@ void RQueue::deleteSubtree(Node *subtree) {
     delete subtree;
 }
 
+// RQueue(const RQueue& rhs)
 RQueue::RQueue(const RQueue& rhs) {
+    m_priorFunc = rhs.getPriorityFn();
+    m_heapType = rhs.getHeapType();
+    m_structure = rhs.getStructure();
 
+    m_heap = deepCopy(rhs.m_heap);
+}
+
+// deepCopy(Node *temp)
+// Recursively iterates through temp subtree and deep copies everything.
+Node* RQueue::deepCopy(Node *temp) {
+    if (temp == nullptr) return nullptr;
+
+    Node *copyNode = new Node(temp->getStudent());
+
+    copyNode->m_left = deepCopy(temp->m_left);
+    copyNode->m_right = deepCopy(temp->m_right);
+
+    return copyNode;
 }
 
 // getHeapType()
@@ -39,14 +61,32 @@ HEAPTYPE RQueue::getHeapType() const {
     return m_heapType;
 }
 
-// 
+// Overloaded assignment operator
 RQueue& RQueue::operator=(const RQueue& rhs) {
+    if (&rhs == this) return *this;
+
+    clear();
+
+    m_priorFunc = rhs.getPriorityFn();
+    m_heapType = rhs.getHeapType();
+    m_structure = rhs.getStructure();
+
+    m_heap = deepCopy(rhs.m_heap);
+
     return *this;
 }
 
 // mergeWithQueue(RQueue &rhs)
 // Calls merge(Node*, Node*) function to recursively merge the two heaps
 void RQueue::mergeWithQueue(RQueue& rhs) {
+
+    // protection against self-merging
+    if (&rhs == this) return;
+
+    if (rhs.getPriorityFn() != m_priorFunc && rhs.getHeapType() != m_heapType && rhs.getStructure() != m_structure) {
+        throw domain_error("Cannot merge heaps with different structures or priority functions.\n");
+    }
+
     Node *leftTree = m_heap;
     Node *rightTree = rhs.m_heap;
 
@@ -73,13 +113,11 @@ Node* RQueue::skewMerge(Node* p1, Node* p2) {
     if (m_heapType == MAXHEAP && (m_priorFunc(p1->getStudent()) < m_priorFunc(p2->getStudent()))) return skewMerge(p2, p1);
 
     // merging the two heaps
+    Node* tempHeap = p1->m_left;
+    p1->m_right = skewMerge(p1->m_right, p2);
+    p1->m_left = p1->m_right;
+    p1->m_right = tempHeap;
     
-        Node* tempHeap = p1->m_left;
-        p1->m_right = skewMerge(p1->m_right, p2);
-        p1->m_left = p1->m_right;
-        p1->m_right = tempHeap;
-    
-
     return p1;
 }
 
@@ -94,27 +132,29 @@ Node* RQueue::leftistMerge(Node* p1, Node* p2) {
     // two verifications to check if the priority is in order
     if (m_heapType == MINHEAP && (m_priorFunc(p1->getStudent()) > m_priorFunc(p2->getStudent()))) return leftistMerge(p2, p1);
     if (m_heapType == MAXHEAP && (m_priorFunc(p1->getStudent()) < m_priorFunc(p2->getStudent()))) return leftistMerge(p2, p1);
-
-    // merging the two heaps
-    p1->m_right = leftistMerge(p1->m_right, p2); 
     
+    p1->m_right = leftistMerge(p1->m_right, p2); // recursively merges p1 right child with p2
+    
+    // if left child doesnt exist then we replace it with the right child
     if (p1->m_left == nullptr) {
         p1->m_left = p1->m_right;
         p1->m_right = nullptr;
     }
-    else {
-        
-        if (p1->m_left->m_npl < p1->m_right->m_npl) {
-            Node *temp = p1->m_left;
-            p1->m_left = p1->m_right;
-            p1->m_right = temp;
-        }
-
-        if (p1->m_right) {
-            p1->m_npl = p1->m_right->m_npl + 1;
-        } 
+    // if right childs npl is higher than the left childs, it switched them
+    else if (p1->m_left->m_npl < p1->m_right->m_npl) {
+        Node* temp = p1->m_left;
+        p1->m_left = p1->m_right;
+        p1->m_right = temp;
     }
-
+    
+    // updating the npl of p1 based on the info on its right child
+    if (p1->m_right) {
+        p1->m_npl = p1->m_right->m_npl + 1;
+    } 
+    else {
+        p1->m_npl = 0;
+    }
+    
     return p1;
 }
 
@@ -172,10 +212,10 @@ prifn_t RQueue::getPriorityFn() const {
 }
 
 // getNextStudent()
-// 
+// pops the root node
 Student RQueue::getNextStudent() {
     if (m_size == 0) throw out_of_range("Error: unable to getNextStudent because heap is empty.\n");
-
+    
     Student priorityStudent = m_heap->getStudent();
     delete m_heap;
     m_heap = skewMerge(m_heap->m_left, m_heap->m_right);
@@ -197,29 +237,33 @@ void RQueue::setPriorityFn(prifn_t priFn, HEAPTYPE heapType) {
 }
 
 // reInsert(Node* root, Node* curr);
-// 
+// root is the root Node of the new tree
+// recusively takes every node in post-order
 Node* RQueue::reInsert(Node *root, Node *curr) {
-    Node *right = curr->m_left;
-    Node *left = curr->m_right;
+    Node *right = curr->m_left; // saves left child
+    Node *left = curr->m_right; // saves right child
     
-    curr->m_left = nullptr;
+    // isolates curr from its children
+    curr->m_left = nullptr; 
     curr->m_right = nullptr;
 
+    // reinsert nodes in left subtree
     if (left) {
         root = reInsert(root, left);
     }
+    // reinsert nodes in right subtree
     if (right) {
         root = reInsert(root, right);
     }
 
+    // checks for the type of structure before re-inserting leaf node curr
     if (m_structure == LEFTIST) {
         root = leftistMerge(root, curr);
     }
     else {
         root = skewMerge(root, curr);
     }
-    cout << "\n";
-    dump(root);
+
     return root;
 }
 
@@ -228,20 +272,33 @@ Node* RQueue::reInsert(Node *root, Node *curr) {
 void RQueue::setStructure(STRUCTURE structure){
     m_structure = structure;
 
-    Node *old_root = m_heap;
+    Node *old_root = m_heap; // save old heap
     m_heap = nullptr;
 
-    m_heap = reInsert(m_heap, old_root);
+    m_heap = reInsert(m_heap, old_root); 
 }
 
 // getStructure() const
-// m_structure getteer
+// m_structure getter
 STRUCTURE RQueue::getStructure() const {
     return m_structure;
 }
 
+// printStudentsQueue() const
+// Prints all nodes post-order
 void RQueue::printStudentsQueue() const {
+    preOrderPrint(m_heap);
+}
 
+// preOrderPrint(Node *curr) const Helper function
+// Recusrsively iterates through the tree and prints every Node
+void RQueue::preOrderPrint(Node *curr) const {
+    if (curr == nullptr) return;
+
+    cout << "[" << m_priorFunc(curr->getStudent()) << "] " << curr->getStudent() << "\n";
+
+    preOrderPrint(curr->m_left);
+    preOrderPrint(curr->m_right);
 }
 
 void RQueue::dump() const {

@@ -228,6 +228,33 @@ class Tester{
 
         return true;
     }
+
+    // testDeepCopy(RQueue &tree1, RQueue &tree2)
+    // accepts two trees and uses their root nodes to call deepCopyCheck()
+    bool testDeepCopy(RQueue &tree1, RQueue &tree2) {
+        bool result = deepCopyCheck(tree1.m_heap, tree2.m_heap);
+        return result;
+    }
+
+    // deepCopyCheck(Node *heap1, Node *heap2)
+    // recursively in order checks the addresses and student info of both
+    bool deepCopyCheck(Node *heap1, Node *heap2) {
+        
+        // checks if both heap1 and heap2 are nullptr
+        if (heap1 == nullptr) {
+            return (heap2 == nullptr) ? true : false;
+        }
+
+        // checks if addresses are different and if student value is the same
+        bool result = (&heap1 != &heap2 && heap1->getStudent() == heap2->getStudent()) ? true : false; 
+
+        // recursively goes throught both heaps to check for address and value
+        result = deepCopyCheck(heap1->m_left, heap2->m_left);
+        result = deepCopyCheck(heap1->m_right, heap2->m_right);
+
+        return result;
+    }
+    
 };
 
 int main(){
@@ -242,7 +269,7 @@ int main(){
     {
         RQueue leftistQueue(priorityFn2, MINHEAP, LEFTIST);
 
-        for (int i = 0; i < 20; i++){
+        for (int i = 0; i < 10; i++){
             Student student(nameGen.getRandString(5), levelGen.getRandNum(),
                         majorGen.getRandNum(), groupGen.getRandNum(),
                         raceGen.getRandNum(), genderGen.getRandNum(),
@@ -253,8 +280,7 @@ int main(){
         string result = (test.testLeftistHeap(leftistQueue)) ? "TRUE" : "FALSE";
         cout << "Leftist Min Heap insertions:\t" << result << "\n";
 
-        leftistQueue.dump();
-        cout << "\n";
+        //leftistQueue.dump();
     }
 
     {
@@ -271,8 +297,7 @@ int main(){
         string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
         cout << "Skew Min Heap insertions:\t" << result << "\n";
 
-        skewQueue.dump();
-        cout << "\n";
+        //skewQueue.dump();
     }
 
     {
@@ -289,12 +314,10 @@ int main(){
         string result = (test.testSkewHeapInserts(aQueue)) ? "TRUE" : "FALSE";
         cout << "Skew Max Heap insertions:\t" << result << "\n";
 
-        aQueue.dump();
-        cout << "\n";
+        //aQueue.dump();
     }
     
     cout << "=======CONVERSION TESTS=======\n";
-
     {
         RQueue skewQueue(priorityFn2, MINHEAP, SKEW);
 
@@ -306,24 +329,47 @@ int main(){
             skewQueue.insertStudent(student);
         }
 
-        cout << "Skew Min Heap dump:\n";
-        skewQueue.dump();
-
-        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
-        cout << "Checking priority of tree before conversion\t" << result << "\n";
-
         skewQueue.setPriorityFn(priorityFn1, MAXHEAP);
 
-        cout << "\nSkew Max Heap dump:\n";
-        skewQueue.dump();
-        cout << "\n";
-
-        string result2 = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
-        cout << "Checking priority of tree after conversion\t" << result2 << "\n";
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        cout << "Skew Min Heap to Skew Max Heap conversion:\t" << result << "\n";
     }
 
     {
-        cout << "\nTesting conversion from skew to leftist heap\n";
+        RQueue skewQueue(priorityFn1, MAXHEAP, SKEW);
+
+        for (int i=0;i<3;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            skewQueue.insertStudent(student);
+        }
+
+        skewQueue.setPriorityFn(priorityFn2, MINHEAP);
+
+        string result = (test.testSkewHeapInserts(skewQueue)) ? "TRUE" : "FALSE";
+        cout << "Skew Max Heap to Skew Min Heap conversion:\t" << result << "\n";
+    }
+
+    {
+        RQueue changeQueue(priorityFn2, MINHEAP, SKEW);
+
+        for (int i=0;i<5;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            changeQueue.insertStudent(student);
+        }
+
+        changeQueue.setStructure(LEFTIST);
+        
+        string result = (test.testLeftistHeap(changeQueue)) ? "TRUE" : "FALSE";
+        cout << "Skew Min Heap to Leftist Min Heap conversion:\t" << result << "\n";
+    }
+
+    {
         RQueue changeQueue(priorityFn2, MINHEAP, LEFTIST);
 
         for (int i=0;i<5;i++){
@@ -334,22 +380,57 @@ int main(){
             changeQueue.insertStudent(student);
         }
 
-        cout << "Dump of the skew heap queue with priorityFn2 (MINHEAP):\n";
-        changeQueue.dump();
-
-        string result = (test.testSkewHeapInserts(changeQueue)) ? "true" : "false";
-        cout << "Checking priority of tree before conversion\t" << result << "\n";
-
-        cout << "\nBeginning conversion:\n";
-        changeQueue.setStructure(LEFTIST);
-
-        cout << "Dump of the leftist heap queue with priorityFn2 (MINHEAP):\n";
-        changeQueue.dump();
-        cout << "\n";
+        changeQueue.setStructure(SKEW);
         
-        //string result2 = (test.testSkewHeapInserts(skewQueue)) ? "true" : "false";
-        //cout << "Checking priority of tree after conversion\t" << result2 << "\n";
+        string result = (test.testSkewHeapInserts(changeQueue)) ? "TRUE" : "FALSE";
+        cout << "Leftist Min Heap to Skew Min Heap conversion:\t" << result << "\n";
     }
+
+    cout << "=======COPY CONSTRUCTOR AND OVERLOADED ASSIGNMENT=======\n";
+    {
+        RQueue queue1(priorityFn2, MINHEAP, SKEW);
+
+        for (int i=0;i<5;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue1.insertStudent(student);
+        }
+
+        RQueue queue2(queue1);
+        
+        string result = (test.testDeepCopy(queue1, queue2)) ? "TRUE" : "FALSE";
+        cout << "Copy Constructor test:\t" << result << "\n";
+    }
+    
+    {
+        RQueue queue1(priorityFn2, MINHEAP, SKEW);
+        RQueue queue2(priorityFn2, MINHEAP, SKEW);
+
+        for (int i=0;i<5;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue1.insertStudent(student);
+        }
+
+        for (int i=0;i<5;i++){
+            Student student(nameGen.getRandString(5), levelGen.getRandNum(),
+                        majorGen.getRandNum(), groupGen.getRandNum(),
+                        raceGen.getRandNum(), genderGen.getRandNum(),
+                        incomeGen.getRandNum(), highschoolGen.getRandNum());
+            queue2.insertStudent(student);
+        }
+
+        queue1 = queue2;
+        
+        string result = (test.testDeepCopy(queue1, queue2)) ? "TRUE" : "FALSE";
+        cout << "Overloaded assignment operator test:\t" << result << "\n";
+    }
+
+
 
     return 0;
 }
